@@ -1,0 +1,53 @@
+Configuration:
+  status: warn
+  name: Log4jYAMLConfig
+  properties:
+    property:
+      name: filename
+      value: /logs/ms.log
+  thresholdFilter:
+    level: debug
+  Appenders:
+    Console:
+      name: STDOUT
+      PatternLayout:
+        Pattern: "%d{yyyy-MM-dd HH:mm:ss} [%-5p][%t][ms - %X{X-B3-TraceId} - %X{X-B3-SpanId} - %X{X-B3-ParentSpanId}][%l] - %m%n"
+    File:
+      name: File
+      fileName: ${filename}
+      PatternLayout:
+        Pattern: "%d %p [ms - %X{X-B3-TraceId} - %X{X-B3-SpanId} - %X{X-B3-ParentSpanId}][%t] - [%l] %m%n"
+    Kafka:
+      name: KAFKA
+      topic: test_log
+      PatternLayout:
+        pattern: "%d [%p]${hostName}[ms - %X{X-B3-TraceId} - %X{X-B3-SpanId} - %X{X-B3-ParentSpanId}][%t] - [%l] %m%n"
+      Property:
+        - name: bootstrap.servers
+          value: 192.168.0.13:9092
+  Loggers:
+    logger:
+      -
+        name: com.gl365
+        level: debug
+        AppenderRef:
+          - ref: STDOUT
+          - ref: File
+      -
+        name: com.aliyun.openservices.shade.com.alibaba.rocketmq
+        level: WARN
+        AppenderRef:
+          - ref: STDOUT
+          - ref: File
+      -
+        name: org.springframework
+        level: INFO
+        AppenderRef:
+          - ref: STDOUT
+          - ref: File
+#    Root:
+#      level: INFO
+#      AppenderRef:
+#        - ref: STDOUT
+#        - ref: File
+#        - ref: KAFKA
